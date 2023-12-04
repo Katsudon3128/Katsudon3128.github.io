@@ -1,34 +1,106 @@
 $(function(){
+  createSblChart('test.csv', parseInt($('#days').val()));
+});
+
+function createChart(){
+  createSblChart('test.csv', parseInt($('#days').val()));
+}
+
+function createSblChart(fileName, days){
   var csvData = [];
   $.ajax({
     type: "GET",
-    url: "/chart/data/test.csv",
+    url: "/chart/data/"+fileName,
     dataType: "text",
     success: function(csv) {
       csvData = $.csv.toObjects(csv);
-      alert(csvData[0].Date+'/'+csvData[0].SBL+'/'+csvData[0].SBL_S+'/'+csvData[0].Price);
+
+      const ctx = $("#myChart");
+
+      const labels = [];
+      const SBL = [];
+      const SBL_S = [];
+      const Price = [];
+      var startOffset = csvData.length - days;
+      for (let i = startOffset; i < csvData.length; ++i) {
+        labels.push(csvData[i].Date);
+        SBL.push(csvData[i].SBL);
+        SBL_S.push(csvData[i].SBL_S);
+        Price.push(csvData[i].Price);
+      }
+
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: '股價',
+            data: Price,
+            fill: false,
+            borderColor: 'rgb(255, 0, 0)',
+            tension: 0.1,
+            yAxisID: 'y2',
+            pointBorderWidth: 5,
+            pointHitRadius: 20,
+            pointStyle: false
+          },
+          {
+            label: '借券餘額',
+            data: SBL,
+            fill: false,
+            borderColor: 'rgb(102, 204, 255)',
+            tension: 0.1,
+            yAxisID: 'y1',
+            pointBorderWidth: 5,
+            pointHitRadius: 20,
+            pointStyle: false
+          },
+          {
+            label: '借券賣餘額',
+            data: SBL_S,
+            fill: true,
+            backgroundColor: 'rgb(255, 153, 51)',
+            borderColor: 'rgb(255, 153, 51)',
+            tension: 0.1,
+            yAxisID: 'y1',
+            pointBorderWidth: 5,
+            pointHitRadius: 20,
+            pointStyle: false
+          }
+        ]
+      };
+
+      const option = {
+        //雙Y軸設定
+        scales:
+        {
+            y1:
+            {
+                type: 'linear',
+                display: true,
+                position: 'left',
+            },
+            y2:
+            {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid:
+                {
+                    drawOnChartArea: false //不顯示grid
+                }
+            }
+        }
+      }
+
+      const config = {
+        type: 'line',
+        data: data,
+        options: option
+      };
+      const myChart = new Chart(ctx, config);
     },
     error: function(r){
       alert('error');
     }
   });
-});
-
-const ctx = $("#myChart");
-
-const labels = ['一月份', '二月份', '三月份','四月份', '五月份', '六月份', '七月份'];  // 设置 X 轴上对应的标签
-const data = {
-  labels: labels,
-  datasets: [{
-    label: '我的第一个折线图',
-    data: [65, 59, 80, 81, 56, 55, 40],
-    fill: false,
-    borderColor: 'rgb(75, 192, 192)', // 设置线的颜色
-    tension: 0.1
-  }]
-};
-const config = {
-  type: 'line', // 设置图表类型
-  data: data,
-};
-const myChart = new Chart(ctx, config);
+}
