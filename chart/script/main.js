@@ -1,9 +1,21 @@
 $(function(){
-  createSblChart('test.csv', parseInt($('#days').val()));
+  var stock = $('#stock').attr('value');
+  createSblChart(stock+'.csv', parseInt($('#days').val()));
 });
 
-function createChart(){
-  createSblChart('test.csv', parseInt($('#days').val()));
+function confirm(){
+  var days = parseInt($('#days').val());
+  var maxDays = parseInt($('#days').attr('max'));
+  var minDays = parseInt($('#days').attr('min'));
+  if(days > maxDays || days < minDays){
+    alert('天數超過查詢範圍');
+  }
+  else{
+    var stock = $('#stock').attr('value');
+    var sblChart = Chart.getChart('SblChart');
+    sblChart.destroy();
+    createSblChart(stock+'.csv', days);
+  }
 }
 
 function createSblChart(fileName, days){
@@ -15,7 +27,7 @@ function createSblChart(fileName, days){
     success: function(csv) {
       csvData = $.csv.toObjects(csv);
 
-      const ctx = $("#myChart");
+      const ctx = $("#SblChart");
 
       const labels = [];
       const SBL = [];
@@ -103,4 +115,9 @@ function createSblChart(fileName, days){
       alert('error');
     }
   });
+}
+
+function changeStock(id, name){
+  $('#stock').attr('value', id);
+  $('#stock').html(name);
 }
