@@ -33,12 +33,23 @@ function createSblChart(fileName, days){
       const SBL = [];
       const SBL_S = [];
       const Price = [];
+      const SBL_20 = [];
+      const SBL_S_20 = [];
       var startOffset = csvData.length - days;
       for (let i = startOffset; i < csvData.length; ++i) {
         labels.push(csvData[i].Date);
         SBL.push(csvData[i].SBL);
         SBL_S.push(csvData[i].SBL_S);
         Price.push(csvData[i].Price);
+
+        var SBL_20_SUM = 0;
+        var SBL_S_20_SUM = 0;
+        for (let j = 0; j < 20; ++j){
+          SBL_20_SUM += parseInt(csvData[i-j].SBL);
+          SBL_S_20_SUM += parseInt(csvData[i-j].SBL_S);
+        }
+        SBL_20.push(SBL_20_SUM/20);
+        SBL_S_20.push(SBL_S_20_SUM/20);
       }
 
       const data = {
@@ -60,6 +71,28 @@ function createSblChart(fileName, days){
             data: SBL,
             fill: false,
             borderColor: 'rgb(102, 204, 255)',
+            tension: 0.1,
+            yAxisID: 'y1',
+            pointBorderWidth: 5,
+            pointHitRadius: 20,
+            pointStyle: false
+          },
+          {
+            label: '20日均-借券',
+            data: SBL_20,
+            fill: false,
+            borderColor: 'rgb(255, 204, 0)',
+            tension: 0.1,
+            yAxisID: 'y1',
+            pointBorderWidth: 5,
+            pointHitRadius: 20,
+            pointStyle: false
+          },
+          {
+            label: '20日均-借券賣',
+            data: SBL_S_20,
+            fill: false,
+            borderColor: 'rgb(0, 102, 204)',
             tension: 0.1,
             yAxisID: 'y1',
             pointBorderWidth: 5,
