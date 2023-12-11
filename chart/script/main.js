@@ -1,4 +1,5 @@
 $(function(){
+  $.ajaxSetup({ cache: false });
   var stock = $('#stock').attr('value');
   createSblChart(stock+'.csv', parseInt($('#days').val()));
 });
