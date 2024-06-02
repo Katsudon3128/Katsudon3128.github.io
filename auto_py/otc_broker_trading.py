@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import datetime
 
 # 初始化chromedriver，請將同版本的chromedriver.exe放在程式目錄內
 driver = webdriver.Chrome()
@@ -29,6 +30,9 @@ driver.switch_to.default_content()
 DownloadCsv('4743')
 DownloadCsv('4128')
 DownloadCsv('6679')
+
+# 下載興櫃資料
+driver.get("https://www.tpex.org.tw/web/emergingstock/historical/daily/EMDaily_dl.php?l=zh-tw&f=EMdss004." + datetime.date.today().strftime('%Y%m%d') + "-C.csv")
 
 input('按Enter結束')
 # 關閉chrome
