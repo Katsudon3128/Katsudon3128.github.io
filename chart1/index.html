@@ -28,7 +28,12 @@
             <button type="button" class="btn btn-primary" style="padding:0px 10px;" onclick="confirm()">確認</button>
         </div>
         <div id="content">
-        </div>          
+        </div>
+        <div style="padding: 10px;">
+            <button type="button" class="btn btn-outline-primary" onclick="addDays(-1)">←前一天</button>
+            <button type="button" class="btn btn-outline-primary" onclick="addDays(1)">後一天→</button>
+        </div>
     </body>
 </html>
+<input type="hidden" id="rowId" name="rowId" value="0" />
 <script src="script/main.js"></script>
