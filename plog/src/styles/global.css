@@ -1,18 +1,18 @@
-.wrap{
+/* .wrap{
     overflow:hidden;
     border-radius:10px 10px 0px 0px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.35);
   }
-  
+   */
   table{
-    font-family: 'Oswald', sans-serif;
+    /* font-family: 'Oswald', sans-serif;
     border-collapse: separate;
     width: 100%;
-    border-spacing: 0;
-    border: 1px solid #6b675d;
+    border-spacing: 0; */
+    border: 2px solid #6b675d;
     font-size: larger;
   }
-  
+/*   
   th{
     background-color: #6b675d;
     color:#ffffff;
@@ -53,5 +53,5 @@
   
   tr:last-of-type{
     border-bottom: 2px solid #6b675d;
-  }
+  } */
   
