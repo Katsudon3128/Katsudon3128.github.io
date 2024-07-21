@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>chart1</title>
+        <script is:inline client:only src="/chart/jquery-3.7.1.min.js"></script>
+        <script is:inline client:only src="/chart/jquery.csv.js"></script>
+        <script is:inline client:only src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    </head>
+    <body>
+        <div style="padding: 10px;">
+            <a href="/chart/">→借券表</a>
+        </div>
+        <div style="padding: 10px;">
+            <button type="button" class="btn btn-outline-primary" onclick="changeStock('4743','合一')">合一</button>
+            <button type="button" class="btn btn-outline-primary" onclick="changeStock('4128','中天')">中天</button>
+            <button type="button" class="btn btn-outline-primary" onclick="changeStock('8996','高力')">高力</button>
+            <button type="button" class="btn btn-outline-primary" onclick="changeStock('2476','鉅祥')">鉅祥</button><br>
+            <button type="button" class="btn btn-outline-primary" onclick="changeStock('9958','世紀鋼')">世紀鋼</button>
+            <button type="button" class="btn btn-outline-primary" onclick="changeStock('2072','世紀風電')">世紀風電</button>
+            <button type="button" class="btn btn-outline-primary" onclick="changeStock('3376','新日興')">新日興</button>
+            <button type="button" class="btn btn-outline-primary" onclick="changeStock('8028','昇陽半導體')">昇陽半導體</button>
+        </div>
+        <div style="padding: 10px;">
+            <button type="button" class="btn btn-outline-primary" onclick="changeType('D','每日')">每日</button>
+            <button type="button" class="btn btn-outline-primary" onclick="changeType('W','每週')">每週</button>
+        </div>
+        <div class="form-outline d-flex flex-row h4" style="width: 50%;padding: 10px;">
+            <label class="form-label" id="stock" value="4743" style="padding:0px 10px;">合一</label>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" id="QueryDate" class="form-control" placeholder="ex:20240621" style="width: 120px;padding:0px 10px;" value="" />
+            <label class="form-label" id="tableType" value="D" style="padding:0px 0px 0px 10px;">每日</label>
+            <label class="form-label" for="QueryDate" style="padding:0px 10px 0px 0px;">總量排行表</label>
+            <button type="button" class="btn btn-primary" style="padding:0px 10px;" onclick="confirm()">確認</button>
+        </div>
+        <div id="content">
+        </div>
+        <div style="padding: 10px;">
+            <button type="button" class="btn btn-outline-primary" onclick="addDays(-1)">←前一天</button>
+            <button type="button" class="btn btn-outline-primary" onclick="addDays(1)">後一天→</button>
+        </div>
+    </body>
+</html>
+<input type="hidden" id="rowId" name="rowId" value="0" />
+<script is:inline client:only src="/chart1/main.js"></script>
