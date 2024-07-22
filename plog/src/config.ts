@@ -16,7 +16,7 @@ export const siteConfig: SiteConfig = {
   },
   banner: {
     enable: true,
-    src: 'assets/images/trees.jpg', // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+    src: 'assets/images/trees.png', // Relative to the /src directory. Relative to the /public directory if it starts with '/'
     position: 'center', // Equivalent to object-position, defaults center
   },
   favicon: [
@@ -45,7 +45,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
   avatar: 'assets/images/kiwi.png', // Relative to the /src directory. Relative to the /public directory if it starts with '/'
   name: 'Charlie Lin',
-  bio: '普通工程師;沒事多寫扣。',
+  bio: '在台北上班的軟體工程師,除了研究程式以外 也喜歡看電影、吃美食、買steam遊戲。',
   links: [
     {
       name: 'Twitter',
