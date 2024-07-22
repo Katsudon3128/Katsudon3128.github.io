@@ -45,7 +45,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
   avatar: 'assets/images/kiwi.png', // Relative to the /src directory. Relative to the /public directory if it starts with '/'
   name: 'Charlie Lin',
-  bio: '在台北上班的軟體工程師,除了研究程式以外 也喜歡看電影、吃美食、買steam遊戲。',
+  bio: '在台北上班的軟體工程師，除了研究程式以外也喜歡看電影、吃美食、買steam遊戲。',
   links: [
     {
       name: 'Twitter',
