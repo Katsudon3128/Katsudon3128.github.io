@@ -8,7 +8,7 @@ import { LinkPreset } from './types/config'
 
 export const siteConfig: SiteConfig = {
   title: '卡紙洞',
-  subtitle: '當不成駭客只好當部落客',
+  subtitle: 'katsudon',
   lang: 'zh_TW', // 'en', 'zh_CN', 'zh_TW', 'ja'
   themeColor: {
     hue: 250, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
@@ -45,7 +45,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
   avatar: 'assets/images/kiwi.png', // Relative to the /src directory. Relative to the /public directory if it starts with '/'
   name: 'Charlie Lin',
-  bio: '在台北上班的軟體工程師，除了研究程式以外也喜歡看電影、吃美食、買steam遊戲。',
+  bio: '在台北工作的軟體工程師，除了研究程式以外也喜歡看電影、吃美食、買steam遊戲。',
   links: [
     {
       name: 'Twitter',
