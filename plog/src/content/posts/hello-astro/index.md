@@ -3,8 +3,8 @@ title: Astro初入門
 published: 2024-07-24
 description: Astro框架基本介紹，打造高效能靜態網站！
 image: "./cover.png"
-tags: [Astro, 前端, 教學]
-category: 前端
+tags: [Astro, 前端]
+category: 技術分享
 draft: false 
 ---
 
