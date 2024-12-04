@@ -16,7 +16,7 @@ export const siteConfig: SiteConfig = {
   },
   banner: {
     enable: true,
-    src: 'assets/images/meme_page.png', // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+    src: 'assets/images/desk_job.png', // Relative to the /src directory. Relative to the /public directory if it starts with '/'
     position: 'center', // Equivalent to object-position, defaults center
   },
   favicon: [
