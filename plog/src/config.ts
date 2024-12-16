@@ -7,8 +7,8 @@ import type {
 import { LinkPreset } from './types/config'
 
 export const siteConfig: SiteConfig = {
-  title: '卡紙洞',
-  subtitle: 'katsudon',
+  title: '查理林',
+  subtitle: 'CharlieLin',
   lang: 'zh_TW', // 'en', 'zh_CN', 'zh_TW', 'ja'
   themeColor: {
     hue: 240, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
@@ -44,8 +44,8 @@ export const navBarConfig: NavBarConfig = {
 
 export const profileConfig: ProfileConfig = {
   avatar: 'assets/images/rock_balancing.png', // Relative to the /src directory. Relative to the /public directory if it starts with '/'
-  name: 'Charlie Lin',
-  bio: 'Hi~你好。',
+  name: '查理林',
+  bio: '嗨~你好~~~',
   links: [
     {
       name: 'Twitter',
