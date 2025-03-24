@@ -12,13 +12,13 @@
             <a href="/chart1/">→總量排行表</a>
         </div>
         <div style="padding: 10px;">
+            <button type="button" class="btn btn-outline-primary" onclick="changeStock('8996','高力')">高力</button>
             <button type="button" class="btn btn-outline-primary" onclick="changeStock('4743','合一')">合一</button>
             <button type="button" class="btn btn-outline-primary" onclick="changeStock('4128','中天')">中天</button>
-            <button type="button" class="btn btn-outline-primary" onclick="changeStock('8996','高力')">高力</button>
         </div>
         <div class="form-outline d-flex flex-row h4" style="width: 50%;padding: 10px;">
-            <label class="form-label" id="stock" value="4743" style="padding:0px 10px;">合一</label>
-            <input min="2" max="60" type="text" inputmode="numeric" pattern="[0-9]*" id="days" class="form-control" style="width: 70px;padding:0px 10px;" value="22" />
+            <label class="form-label" id="stock" value="8996" style="padding:0px 10px;">高力</label>
+            <input min="2" max="90" type="text" inputmode="numeric" pattern="[0-9]*" id="days" class="form-control" style="width: 70px;padding:0px 10px;" value="22" />
             <label class="form-label" for="days" style="padding:0px 10px;">天內的借券表</label>
             <button type="button" class="btn btn-primary" style="padding:0px 10px;" onclick="confirm()">確認</button>
         </div>
