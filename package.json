@@ -1,0 +1,28 @@
+{
+  "name": "katsudon3128-github-io",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 npx --no-install astro dev",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 npx --no-install astro build",
+    "check": "ASTRO_TELEMETRY_DISABLED=1 npx --no-install astro check",
+    "format": "npx --no-install prettier --write 'src/**/*.{astro,css,md,ts}' 'tests/**/*.mjs' '.github/**/*.yml' README.md package.json astro.config.ts tsconfig.json .prettierrc.mjs",
+    "format:check": "npx --no-install prettier --check 'src/**/*.{astro,css,md,ts}' 'tests/**/*.mjs' '.github/**/*.yml' README.md package.json astro.config.ts tsconfig.json .prettierrc.mjs",
+    "test:output": "node --test tests/static-output.test.mjs",
+    "test": "npm run build && npm run test:output",
+    "verify": "npm run format:check && npm run check && npm test"
+  },
+  "dependencies": {
+    "astro": "7.2.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "prettier": "3.9.6",
+    "prettier-plugin-astro": "0.14.1",
+    "typescript": "6.0.3"
+  }
+}

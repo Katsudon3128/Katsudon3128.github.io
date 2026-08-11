@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="產品設計與程式碼區塊">
+  <rect width="1600" height="1000" fill="#171512"/>
+  <g fill="none" stroke="#766a57" stroke-width="3">
+    <rect x="120" y="140" width="670" height="470"/><rect x="850" y="260" width="610" height="570"/>
+    <path d="M120 230h670M850 350h610M210 320h360M210 390h490M210 460h290M940 450h390M940 520h280M940 590h410"/>
+  </g>
+  <rect x="120" y="680" width="500" height="24" fill="#c8944d"/>
+</svg>

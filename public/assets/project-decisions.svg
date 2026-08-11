@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" role="img" aria-label="需求決策紀錄器介面">
+  <rect width="720" height="440" fill="#1b1916"/><path d="M100 220h520" stroke="#766a57" stroke-width="4"/>
+  <g fill="#1b1916" stroke="#c8944d" stroke-width="4"><circle cx="150" cy="220" r="24"/><circle cx="360" cy="220" r="24"/><circle cx="570" cy="220" r="24"/></g>
+  <path d="M100 105h235M385 105h235M100 335h190M430 335h190" stroke="#766a57" stroke-width="3"/>
+</svg>

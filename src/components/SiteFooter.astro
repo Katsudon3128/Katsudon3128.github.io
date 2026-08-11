@@ -1,0 +1,67 @@
+---
+import { siteConfig } from "../config/site";
+
+const currentYear = new Date().getFullYear();
+const yearRange = currentYear === 2026 ? "2026" : `2026–${currentYear}`;
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <nav aria-label="頁尾導覽">
+      <ul class="footer-nav">
+        {
+          siteConfig.navigation.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <p>© {yearRange} {siteConfig.owner}。保留所有權利。</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .site-footer__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    width: min(100% - (var(--space-page) * 2), var(--content-width));
+    margin-inline: auto;
+    padding-block: 2rem;
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    text-align: right;
+  }
+
+  @media (max-width: 44.99rem) {
+    .site-footer__inner {
+      align-items: start;
+      flex-direction: column;
+    }
+
+    p {
+      text-align: left;
+    }
+  }
+</style>

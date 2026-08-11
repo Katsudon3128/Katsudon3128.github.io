@@ -1,0 +1,108 @@
+---
+import Hero from "../components/Hero.astro";
+import { siteConfig } from "../config/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout metadata={siteConfig.pages.about}>
+  <Hero
+    eyebrow="關於我"
+    title="把產品責任接起來，而不只交付程式碼。"
+    introduction={siteConfig.home.introduction}
+    cover={siteConfig.assets.covers.about}
+  />
+
+  <div class="page-section content-width prose-grid">
+    <section aria-labelledby="work-title">
+      <h2 id="work-title">工作取向</h2>
+      <p>
+        我專注於需要從模糊需求走到正式上線的 Web
+        軟體產品，讓產品選擇、技術設計與日常維運彼此連得起來。
+      </p>
+    </section>
+    <section aria-labelledby="scope-title">
+      <h2 id="scope-title">從 0 到 1 的能力範圍</h2>
+      <ul class="border-list">
+        <li><strong>需求</strong><span>釐清目標、限制與可驗證成果</span></li>
+        <li>
+          <strong>設計</strong><span>建立產品流程、內容模型與技術邊界</span>
+        </li>
+        <li><strong>實作</strong><span>完成前後端、測試與必要整合</span></li>
+        <li><strong>上線</strong><span>部署、自動化檢查與基本維運</span></li>
+      </ul>
+    </section>
+    <section aria-labelledby="contact-title">
+      <h2 id="contact-title">聯絡管道</h2>
+      <p>若想交流合作方向或查證經歷，可以直接使用以下公開管道。</p>
+      <ul class="contact-list">
+        <li>
+          <a class="framed-link" href={`mailto:${siteConfig.contact.email}`}
+            >電子郵件</a
+          >
+        </li>
+        <li>
+          <a
+            class="framed-link"
+            href={siteConfig.contact.github}
+            target="_blank"
+            rel="noreferrer">GitHub</a
+          >
+        </li>
+        <li>
+          <a
+            class="framed-link"
+            href={siteConfig.contact.linkedin}
+            target="_blank"
+            rel="noreferrer">LinkedIn</a
+          >
+        </li>
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .prose-grid {
+    display: grid;
+    gap: 4rem;
+  }
+
+  section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: clamp(1.5rem, 5vw, 5rem);
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .border-list,
+  .contact-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .border-list li {
+    display: grid;
+    grid-template-columns: minmax(6rem, 0.5fr) minmax(0, 1.5fr);
+    gap: 1rem;
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .border-list span {
+    color: var(--color-text-muted);
+  }
+
+  .contact-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 44.99rem) {
+    section,
+    .contact-list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

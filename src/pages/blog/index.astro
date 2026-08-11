@@ -1,0 +1,25 @@
+---
+import ArticleList from "../../components/ArticleList.astro";
+import Hero from "../../components/Hero.astro";
+import { siteConfig } from "../../config/site";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPublishedPosts } from "../../utils/getPublishedPosts";
+
+const posts = await getPublishedPosts();
+---
+
+<BaseLayout metadata={siteConfig.pages.blog}>
+  <Hero
+    eyebrow="部落格"
+    title="把做產品的判斷，寫成可追溯的文章。"
+    introduction="記錄 Web 軟體產品從需求、設計、實作到上線維運的具體方法。"
+    cover={siteConfig.assets.covers.blog}
+  />
+  <section
+    class="page-section content-width"
+    aria-labelledby="article-list-title"
+  >
+    <h2 id="article-list-title">所有文章</h2>
+    <ArticleList posts={posts} showCovers />
+  </section>
+</BaseLayout>

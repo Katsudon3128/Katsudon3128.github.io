@@ -1,0 +1,29 @@
+---
+import Hero from "../components/Hero.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { siteConfig } from "../config/site";
+import { projects } from "../data/projects";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout metadata={siteConfig.pages.projects}>
+  <Hero
+    eyebrow="專案"
+    title="用上線成果，說明我怎麼解決問題。"
+    introduction="這些展示專案是我自行開發的 Web 軟體產品；完整脈絡與實作細節保留在各自的 GitHub 儲存庫。"
+    cover={siteConfig.assets.covers.projects}
+  />
+  <section
+    class="page-section content-width"
+    aria-labelledby="all-projects-title"
+  >
+    <h2 id="all-projects-title">所有展示專案</h2>
+    <div class="project-grid">
+      {
+        projects.map((project) => (
+          <ProjectCard project={project} labelPrefix="展示專案" />
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

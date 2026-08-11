@@ -1,0 +1,45 @@
+---
+import { siteConfig } from "../config/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout metadata={siteConfig.pages.notFound}>
+  <section class="error-page content-width" aria-labelledby="error-title">
+    <p class="eyebrow">404</p>
+    <h1 id="error-title">找不到這個頁面</h1>
+    <p>網址可能已變更，或這個內容尚未建立。你可以回到首頁繼續瀏覽。</p>
+    <a class="button-link framed-link" href="/">回首頁</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .error-page {
+    display: grid;
+    align-content: center;
+    min-height: 65svh;
+    padding-block: 5rem;
+  }
+
+  .eyebrow {
+    margin-bottom: 1rem;
+    color: var(--color-accent-strong);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+  }
+
+  h1 {
+    margin-bottom: 1rem;
+    font-size: clamp(3rem, 10vw, 7rem);
+  }
+
+  p:not(.eyebrow) {
+    max-width: 36rem;
+    color: var(--color-text-muted);
+  }
+
+  .button-link {
+    justify-self: start;
+    margin-top: 1rem;
+  }
+</style>

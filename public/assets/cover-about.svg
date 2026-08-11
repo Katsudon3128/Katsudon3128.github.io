@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="人物輪廓與工作節點">
+  <rect width="1600" height="1000" fill="#161513"/>
+  <circle cx="1160" cy="310" r="145" fill="none" stroke="#766a57" stroke-width="5"/>
+  <path d="M850 850c45-230 165-345 310-345s265 115 310 345M120 280h500M120 430h650M120 580h420M120 730h590" fill="none" stroke="#766a57" stroke-width="5"/>
+  <rect x="120" y="250" width="145" height="16" fill="#c8944d"/>
+</svg>

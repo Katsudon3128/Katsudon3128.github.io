@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="多個產品介面視窗">
+  <rect width="1600" height="1000" fill="#151412"/>
+  <g fill="none" stroke="#766a57" stroke-width="4">
+    <rect x="90" y="150" width="430" height="700"/><rect x="585" y="150" width="430" height="700"/><rect x="1080" y="150" width="430" height="700"/>
+    <path d="M90 250h430M585 250h430M1080 250h430M160 360h290M655 360h290M1150 360h290"/>
+  </g>
+  <rect x="585" y="150" width="430" height="34" fill="#c8944d"/>
+</svg>

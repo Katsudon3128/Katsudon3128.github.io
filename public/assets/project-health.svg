@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" role="img" aria-label="服務健康儀表板介面">
+  <rect width="720" height="440" fill="#1b1916"/><rect x="42" y="42" width="636" height="356" fill="none" stroke="#766a57" stroke-width="3"/>
+  <path d="M80 330l95-90 86 42 105-130 92 95 112-142 70 42" fill="none" stroke="#c8944d" stroke-width="5"/>
+  <path d="M80 330h560M80 100v230" stroke="#766a57" stroke-width="3"/>
+</svg>
