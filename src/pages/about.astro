@@ -1,6 +1,7 @@
 ---
 import Hero from "../components/Hero.astro";
 import { siteConfig } from "../config/site";
+import { aboutContent } from "../data/about";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
@@ -10,64 +11,155 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     title="把產品責任接起來，而不只交付程式碼。"
     introduction={siteConfig.home.introduction}
     cover={siteConfig.assets.covers.about}
+    portrait={siteConfig.assets.portraits.about}
   />
 
-  <div class="page-section content-width prose-grid">
-    <section aria-labelledby="work-title">
-      <h2 id="work-title">工作取向</h2>
-      <p>
-        我專注於需要從模糊需求走到正式上線的 Web
-        軟體產品，讓產品選擇、技術設計與日常維運彼此連得起來。
-      </p>
+  <div class="page-section content-width about-sections">
+    <section class="about-section" aria-labelledby="background-title">
+      <h2 id="background-title">個人背景與工作取向</h2>
+      <div class="about-section__body">
+        {aboutContent.background.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
     </section>
-    <section aria-labelledby="scope-title">
+
+    <section class="about-section" aria-labelledby="experience-title">
+      <div>
+        <h2 id="experience-title">工作經歷</h2>
+        <p class="section-note">
+          首版使用可替換示例資料；公司、職稱、年月、責任與成果集中維護。
+        </p>
+        <dl class="career-summary">
+          <div>
+            <dt>從業年資</dt>
+            <dd>{aboutContent.careerLength}</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="timeline" role="list">
+        {
+          aboutContent.experiences.map((experience) => (
+            <article
+              class="timeline-entry"
+              aria-label={`工作經歷：${experience.organization}`}
+              role="listitem"
+            >
+              <header class="timeline-entry__header">
+                <div>
+                  <h3>{experience.organization}</h3>
+                  <p data-experience-role>{experience.role}</p>
+                </div>
+                <p class="timeline-entry__period">
+                  <time datetime={experience.start.datetime}>
+                    {experience.start.label}
+                  </time>
+                  <span aria-hidden="true">—</span>
+                  {experience.end.datetime ? (
+                    <time datetime={experience.end.datetime}>
+                      {experience.end.label}
+                    </time>
+                  ) : (
+                    <span>{experience.end.label}</span>
+                  )}
+                </p>
+              </header>
+              <div class="experience-details">
+                <div>
+                  <h4>主要責任</h4>
+                  <ul>
+                    {experience.responsibilities.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h4>代表成果</h4>
+                  <ul>
+                    {experience.outcomes.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="about-section" aria-labelledby="scope-title">
       <h2 id="scope-title">從 0 到 1 的能力範圍</h2>
       <ul class="border-list">
-        <li><strong>需求</strong><span>釐清目標、限制與可驗證成果</span></li>
-        <li>
-          <strong>設計</strong><span>建立產品流程、內容模型與技術邊界</span>
-        </li>
-        <li><strong>實作</strong><span>完成前後端、測試與必要整合</span></li>
-        <li><strong>上線</strong><span>部署、自動化檢查與基本維運</span></li>
+        {
+          aboutContent.capabilities.map((capability) => (
+            <li>
+              <strong>{capability.stage}</strong>
+              <span>{capability.description}</span>
+            </li>
+          ))
+        }
       </ul>
     </section>
-    <section aria-labelledby="contact-title">
-      <h2 id="contact-title">聯絡管道</h2>
-      <p>若想交流合作方向或查證經歷，可以直接使用以下公開管道。</p>
-      <ul class="contact-list">
-        <li>
-          <a class="framed-link" href={`mailto:${siteConfig.contact.email}`}
-            >電子郵件</a
-          >
-        </li>
-        <li>
-          <a
-            class="framed-link"
-            href={siteConfig.contact.github}
-            target="_blank"
-            rel="noreferrer">GitHub</a
-          >
-        </li>
-        <li>
-          <a
-            class="framed-link"
-            href={siteConfig.contact.linkedin}
-            target="_blank"
-            rel="noreferrer">LinkedIn</a
-          >
-        </li>
+
+    <section class="about-section" aria-labelledby="technology-title">
+      <h2 id="technology-title">常用技術</h2>
+      <ul class="technology-list">
+        {aboutContent.technologies.map((technology) => <li>{technology}</li>)}
       </ul>
+    </section>
+
+    <section class="about-section" aria-labelledby="principles-title">
+      <h2 id="principles-title">工作原則</h2>
+      <ol class="principle-list">
+        {
+          aboutContent.principles.map((principle) => (
+            <li>
+              <h3>{principle.title}</h3>
+              <p>{principle.description}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="about-section" aria-labelledby="contact-title">
+      <h2 id="contact-title">聯絡管道</h2>
+      <div>
+        <p>若想交流合作方向或查證經歷，可以直接使用以下公開管道。</p>
+        <ul class="contact-list">
+          <li>
+            <a class="framed-link" href={`mailto:${siteConfig.contact.email}`}
+              >電子郵件</a
+            >
+          </li>
+          <li>
+            <a
+              class="framed-link"
+              href={siteConfig.contact.github}
+              target="_blank"
+              rel="noreferrer">GitHub</a
+            >
+          </li>
+          <li>
+            <a
+              class="framed-link"
+              href={siteConfig.contact.linkedin}
+              target="_blank"
+              rel="noreferrer">LinkedIn</a
+            >
+          </li>
+        </ul>
+      </div>
     </section>
   </div>
 </BaseLayout>
 
 <style>
-  .prose-grid {
+  .about-sections {
     display: grid;
     gap: 4rem;
   }
 
-  section {
+  .about-section {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
     gap: clamp(1.5rem, 5vw, 5rem);
@@ -75,7 +167,124 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     border-top: 1px solid var(--color-border);
   }
 
+  .about-section h2 {
+    margin-bottom: 0;
+  }
+
+  .about-section__body p:last-child,
+  .section-note,
+  .principle-list p,
+  .contact-list + p {
+    margin-bottom: 0;
+  }
+
+  .section-note {
+    margin-top: 1rem;
+    color: var(--color-text-muted);
+  }
+
+  .career-summary {
+    margin: 1.5rem 0 0;
+  }
+
+  .career-summary div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-block: 1px solid var(--color-border);
+    padding-block: 0.75rem;
+  }
+
+  .career-summary dt {
+    color: var(--color-text-muted);
+  }
+
+  .career-summary dd {
+    margin: 0;
+    color: var(--color-accent-strong);
+    font-family: var(--font-mono);
+  }
+
+  .timeline {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .timeline-entry {
+    position: relative;
+    border: 1px solid var(--color-border);
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .timeline-entry::before {
+    position: absolute;
+    top: 1.75rem;
+    left: -0.45rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    border: 2px solid var(--color-background);
+    background: var(--color-accent);
+    content: "";
+  }
+
+  .timeline-entry__header {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .timeline-entry__header h3,
+  .timeline-entry__header p,
+  .experience-details ul,
+  .principle-list,
+  .principle-list p {
+    margin: 0;
+  }
+
+  [data-experience-role],
+  .timeline-entry__period,
+  .experience-details li,
+  .principle-list p {
+    color: var(--color-text-muted);
+  }
+
+  .timeline-entry__period {
+    display: flex;
+    flex: none;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .experience-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+    padding-top: 1.5rem;
+  }
+
+  .experience-details h4 {
+    margin-block: 0 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+  }
+
+  .experience-details ul {
+    padding-left: 1.2rem;
+  }
+
+  .experience-details li + li {
+    margin-top: 0.5rem;
+  }
+
   .border-list,
+  .technology-list,
+  .principle-list,
   .contact-list {
     margin: 0;
     padding: 0;
@@ -94,15 +303,62 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     color: var(--color-text-muted);
   }
 
+  .technology-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: start;
+    gap: 0.5rem;
+  }
+
+  .technology-list li {
+    border: 1px solid var(--color-border);
+    padding: 0.4rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+
+  .principle-list {
+    counter-reset: principle;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--color-border);
+  }
+
+  .principle-list li {
+    counter-increment: principle;
+    min-width: 0;
+    padding: 1.25rem;
+    background: var(--color-background);
+  }
+
+  .principle-list h3 {
+    margin-bottom: 0.5rem;
+  }
+
+  .principle-list h3::before {
+    margin-right: 0.5rem;
+    color: var(--color-accent-strong);
+    content: counter(principle, decimal-leading-zero) ".";
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+  }
+
   .contact-list {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   @media (max-width: 44.99rem) {
-    section,
+    .about-section,
+    .experience-details,
+    .principle-list,
     .contact-list {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .timeline-entry__header {
+      display: grid;
     }
   }
 </style>

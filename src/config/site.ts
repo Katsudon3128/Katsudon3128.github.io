@@ -26,7 +26,8 @@ export const siteConfig = {
     },
     about: {
       title: "關於我",
-      description: "認識查理林的工作取向、能力範圍與聯絡管道。",
+      description:
+        "認識查理林的背景、工作經歷、從 0 到 1 能力、常用技術、工作原則與聯絡管道。",
     },
     projects: {
       title: "專案",
@@ -44,6 +45,14 @@ export const siteConfig = {
   assets: {
     logo: "/assets/site-logo.svg",
     favicon: "/assets/favicon.svg",
+    portraits: {
+      about: {
+        src: "/assets/avatar-about.svg",
+        alt: "查理林的透明背景虛擬人像插畫",
+        width: 720,
+        height: 900,
+      },
+    },
     covers: {
       home: {
         src: "/assets/cover-home.svg",
@@ -53,7 +62,7 @@ export const siteConfig = {
       },
       about: {
         src: "/assets/cover-about.svg",
-        alt: "深色背景上的人物輪廓與工作節點",
+        alt: "深色背景上的產品工作流程與連結節點",
         position: "50% 45%",
         overlay: 0.72,
       },
@@ -80,3 +89,6 @@ export type PageMetadata = {
 
 export type CoverConfig =
   (typeof siteConfig.assets.covers)[keyof typeof siteConfig.assets.covers];
+
+export type PortraitConfig =
+  (typeof siteConfig.assets.portraits)[keyof typeof siteConfig.assets.portraits];

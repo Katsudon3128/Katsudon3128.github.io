@@ -1,14 +1,15 @@
 ---
-import type { CoverConfig } from "../config/site";
+import type { CoverConfig, PortraitConfig } from "../config/site";
 
 interface Props {
   eyebrow?: string;
   title: string;
   introduction?: string;
   cover: CoverConfig;
+  portrait?: PortraitConfig;
 }
 
-const { eyebrow, title, introduction, cover } = Astro.props;
+const { eyebrow, title, introduction, cover, portrait } = Astro.props;
 const style = `--cover-position: ${cover.position}; --overlay-opacity: ${cover.overlay};`;
 ---
 
@@ -23,10 +24,32 @@ const style = `--cover-position: ${cover.position}; --overlay-opacity: ${cover.o
     fetchpriority="high"
   />
   <div class="full-bleed-hero__overlay"></div>
-  <div class="full-bleed-hero__content content-width">
-    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
-    <h1 id="page-title">{title}</h1>
-    {introduction && <p class="hero-introduction">{introduction}</p>}
+  <div
+    class:list={[
+      "full-bleed-hero__content",
+      "content-width",
+      { "full-bleed-hero__content--with-portrait": portrait },
+    ]}
+  >
+    <div class="full-bleed-hero__copy">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1 id="page-title">{title}</h1>
+      {introduction && <p class="hero-introduction">{introduction}</p>}
+    </div>
+    {
+      portrait && (
+        <img
+          data-virtual-portrait
+          class="full-bleed-hero__portrait"
+          src={portrait.src}
+          alt={portrait.alt}
+          width={portrait.width}
+          height={portrait.height}
+          decoding="async"
+          fetchpriority="high"
+        />
+      )
+    }
   </div>
 </section>
 
@@ -64,6 +87,26 @@ const style = `--cover-position: ${cover.position}; --overlay-opacity: ${cover.o
     padding-block: clamp(5rem, 15vh, 10rem) clamp(3rem, 9vh, 6rem);
   }
 
+  .full-bleed-hero__content--with-portrait {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.85fr);
+    align-items: end;
+    gap: clamp(1rem, 4vw, 4rem);
+    padding-block: clamp(3rem, 8vh, 6rem) 0;
+  }
+
+  .full-bleed-hero__content--with-portrait .full-bleed-hero__copy {
+    padding-bottom: clamp(3rem, 9vh, 6rem);
+  }
+
+  .full-bleed-hero__portrait {
+    width: min(100%, 36rem);
+    max-height: calc(100svh - var(--header-height) - 2rem);
+    object-fit: contain;
+    object-position: center bottom;
+    justify-self: end;
+  }
+
   h1 {
     max-width: 12ch;
     margin-bottom: 1.5rem;
@@ -83,5 +126,22 @@ const style = `--cover-position: ${cover.position}; --overlay-opacity: ${cover.o
     margin-bottom: 0;
     color: var(--color-text-muted);
     font-size: clamp(1.05rem, 2vw, 1.35rem);
+  }
+
+  @media (max-width: 44.99rem) {
+    .full-bleed-hero__content--with-portrait {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      padding-top: clamp(3rem, 8vh, 5rem);
+    }
+
+    .full-bleed-hero__content--with-portrait .full-bleed-hero__copy {
+      padding-bottom: 1.5rem;
+    }
+
+    .full-bleed-hero__portrait {
+      width: min(82%, 20rem);
+      max-height: 42svh;
+    }
   }
 </style>

@@ -121,13 +121,61 @@ test("404 提供回復導覽且不載入滿版封面圖片", async () => {
   assert.doesNotMatch(html, /<img[^>]*data-full-bleed-cover/);
 });
 
-test("關於我頁面提供可直接開啟的三種聯絡管道", async () => {
+test("關於我頁面依序呈現完整資歷，並提供三種聯絡管道", async () => {
   const html = await readRoute("/about/");
+  const main = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i)?.[1] ?? "";
+  const headings = [
+    "個人背景與工作取向",
+    "工作經歷",
+    "從 0 到 1 的能力範圍",
+    "常用技術",
+    "工作原則",
+    "聯絡管道",
+  ];
+  const positions = headings.map((heading) => main.indexOf(heading));
+
+  assert.ok(
+    positions.every((position) => position >= 0),
+    "關於我應呈現全部六個資歷區段",
+  );
+  assert.deepEqual(
+    [...positions].sort((a, b) => a - b),
+    positions,
+    "關於我內容順序應符合規格",
+  );
+  assert.match(main, /<article[^>]*aria-label="工作經歷：[^"]+"/);
+  assert.match(main, /<h3[^>]*>[^<]+<\/h3>/);
+  assert.match(main, /<p[^>]*data-experience-role[^>]*>[^<]+<\/p>/);
+  assert.match(main, /<time datetime="\d{4}-\d{2}"[^>]*>\d{4}\.\d{2}<\/time>/);
+  assert.match(main, /主要責任/);
+  assert.match(main, /代表成果/);
+  assert.match(main, /從業年資/);
 
   assert.match(html, /href="mailto:[^"]+"/);
   assert.match(html, /href="https:\/\/github\.com\/[^"]+"/);
   assert.match(html, /href="https:\/\/www\.linkedin\.com\/[^"]+"/);
   assert.doesNotMatch(html, /<form\b/i);
+});
+
+test("關於我首屏顯示可替換虛擬人像與獨立 metadata", async () => {
+  const html = await readRoute("/about/");
+
+  assert.match(html, /<title>關於我｜查理林｜資深 Web 軟體工程師<\/title>/);
+  assert.match(html, /<meta name="description" content="[^"]+">/);
+  assert.match(
+    html,
+    /<link rel="canonical" href="https:\/\/katsudon3128\.github\.io\/about\/">/,
+  );
+  assert.match(html, /<meta property="og:title" content="[^"]+">/);
+  assert.match(html, /<meta property="og:description" content="[^"]+">/);
+  assert.match(
+    html,
+    /<section[^>]*style="[^"]*--overlay-opacity: 0\.\d+[^"]*"[^>]*>/,
+  );
+  assert.match(
+    html,
+    /<img[^>]*data-virtual-portrait[^>]*src="\/assets\/avatar-about\.svg"[^>]*alt="[^"]+"[^>]*width="\d+"[^>]*height="\d+"[^>]*>/,
+  );
 });
 
 test("專案頁顯示可在新分頁開啟的展示專案", async () => {
