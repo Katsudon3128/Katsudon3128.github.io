@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { buildResponsiveArticleImage } from "../utils/articleImages";
 import { formatDate } from "../utils/formatDate";
 
 interface Props {
@@ -9,24 +10,37 @@ interface Props {
 }
 
 const { posts, showCovers = false, labelPrefix } = Astro.props;
+const thumbnailSizes =
+  "(max-width: 44.99rem) calc(100vw - 2rem), (max-width: 79rem) 30vw, 22rem";
+const rows = await Promise.all(
+  posts.map(async (post) => ({
+    post,
+    coverImage: showCovers
+      ? await buildResponsiveArticleImage(post.data.cover, thumbnailSizes)
+      : undefined,
+  })),
+);
 ---
 
 <div class="article-list">
   {
-    posts.map((post) => (
+    rows.map(({ post, coverImage }) => (
       <article
         class:list={["article-row", { "article-row--with-cover": showCovers }]}
         aria-label={
           labelPrefix ? `${labelPrefix}：${post.data.title}` : undefined
         }
       >
-        {showCovers && (
+        {coverImage && (
           <img
-            src={post.data.cover}
+            src={coverImage.src}
             alt={post.data.coverAlt}
-            width="360"
-            height="180"
+            width={coverImage.width}
+            height={coverImage.height}
             loading="lazy"
+            decoding="async"
+            srcset={coverImage.srcset}
+            sizes={coverImage.sizes}
           />
         )}
         <time datetime={post.data.publishedAt.toISOString()}>

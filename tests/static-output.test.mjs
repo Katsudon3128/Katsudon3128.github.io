@@ -251,6 +251,21 @@ test("部落格頁能開啟示例文章並閱讀 Markdown 正文", async () => {
   );
 });
 
+test("部落格文章列表將中央圖片鍵解析為可用的縮圖", async () => {
+  const html = await readRoute("/blog/");
+  const thumbnail = html.match(
+    /<article class="article-row article-row--with-cover"[^>]*>\s*<img([^>]*)>/,
+  )?.[1];
+
+  assert.ok(thumbnail, "文章列表應輸出縮圖");
+  const source = thumbnail.match(/\bsrc="([^"]+)"/)?.[1];
+  assert.match(source ?? "", /^\/_astro\/product-flow\.[^"]+\.webp$/);
+  assert.match(thumbnail, /\bsrcset="[^"]+ 480w,[^"]+ 800w,[^"]+ 1200w"/);
+  assert.match(thumbnail, /\bsizes="[^"]+"/);
+  assert.match(thumbnail, /\bloading="lazy"/);
+  await stat(path.join(dist, source.slice(1)));
+});
+
 test("文章頁輸出獨立 metadata、結構化資料與閱讀時間", async () => {
   const html = await readRoute("/blog/building-products-end-to-end/");
 
