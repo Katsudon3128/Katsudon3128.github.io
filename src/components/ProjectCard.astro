@@ -4,9 +4,14 @@ import type { Project } from "../data/projects";
 interface Props {
   project: Project;
   labelPrefix?: string;
+  imageSizes?: string;
 }
 
-const { project, labelPrefix = "專案" } = Astro.props;
+const {
+  project,
+  labelPrefix = "專案",
+  imageSizes = "(min-width: 65rem) 33vw, (min-width: 45rem) 50vw, 100vw",
+} = Astro.props;
 ---
 
 <article class="project-card" aria-label={`${labelPrefix}：${project.name}`}>
@@ -16,6 +21,7 @@ const { project, labelPrefix = "專案" } = Astro.props;
     width="720"
     height="440"
     loading="lazy"
+    sizes={imageSizes}
   />
   <div class="project-card__body">
     <div class="project-card__heading">

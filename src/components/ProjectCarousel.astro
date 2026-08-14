@@ -1,0 +1,169 @@
+---
+import type { Project } from "../data/projects";
+import ProjectCard from "./ProjectCard.astro";
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<section
+  class="project-carousel"
+  aria-label="展示專案輪播"
+  data-project-carousel
+>
+  <div class="project-carousel__controls">
+    <button
+      type="button"
+      aria-label="上一個專案"
+      data-carousel-previous
+      disabled>←</button
+    >
+    <button type="button" aria-label="下一個專案" data-carousel-next>→</button>
+  </div>
+  <div
+    class="project-carousel__track"
+    aria-label="展示專案清單"
+    tabindex="0"
+    data-carousel-track
+  >
+    {
+      projects.map((project) => (
+        <ProjectCard
+          project={project}
+          labelPrefix="展示專案"
+          imageSizes="(min-width: 65rem) 33vw, (min-width: 45rem) 50vw, 88vw"
+        />
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .project-carousel {
+    margin-top: 2rem;
+  }
+
+  .project-carousel__controls {
+    display: flex;
+    justify-content: end;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  button {
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  button:disabled {
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .project-carousel__track {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+  }
+
+  .project-carousel__track > :global(*) {
+    flex: 0 0 88%;
+    scroll-snap-align: start;
+  }
+
+  .project-carousel__track::after {
+    content: "";
+    flex: 0 0 calc(12% - 1rem);
+  }
+
+  @media (min-width: 45rem) {
+    .project-carousel__track > :global(*) {
+      flex-basis: calc((100% - 1rem) / 2);
+    }
+
+    .project-carousel__track::after {
+      display: none;
+    }
+  }
+
+  @media (min-width: 65rem) {
+    .project-carousel__track > :global(*) {
+      flex-basis: calc((100% - 2rem) / 3);
+    }
+  }
+</style>
+
+<script>
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  for (const carousel of document.querySelectorAll<HTMLElement>(
+    "[data-project-carousel]",
+  )) {
+    const track = carousel.querySelector<HTMLElement>("[data-carousel-track]");
+    const previous = carousel.querySelector<HTMLButtonElement>(
+      "[data-carousel-previous]",
+    );
+    const next = carousel.querySelector<HTMLButtonElement>(
+      "[data-carousel-next]",
+    );
+    const cards = Array.from(
+      track?.querySelectorAll<HTMLElement>(".project-card") ?? [],
+    );
+
+    if (!track || !previous || !next || cards.length === 0) continue;
+
+    let activeIndex = 0;
+    let scrollTimer: number | undefined;
+    const step = () =>
+      cards[1]?.offsetLeft - cards[0].offsetLeft || track.clientWidth;
+    const maxScroll = () => track.scrollWidth - track.clientWidth;
+    const maxIndex = () => Math.round(maxScroll() / step());
+    const updateControls = () => {
+      previous.disabled = activeIndex === 0;
+      next.disabled = activeIndex === maxIndex();
+    };
+    const syncPosition = () => {
+      activeIndex = Math.min(
+        Math.max(Math.round(track.scrollLeft / step()), 0),
+        maxIndex(),
+      );
+      updateControls();
+    };
+    const queuePositionSync = () => {
+      window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(syncPosition, 120);
+    };
+    const move = (direction: -1 | 1) => {
+      activeIndex = Math.min(Math.max(activeIndex + direction, 0), maxIndex());
+      const target = Math.min(activeIndex * step(), maxScroll());
+      updateControls();
+      track.scrollTo({
+        left: target,
+        behavior: reducedMotion.matches ? "auto" : "smooth",
+      });
+    };
+
+    previous.addEventListener("click", () => move(-1));
+    next.addEventListener("click", () => move(1));
+    track.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      event.preventDefault();
+      move(event.key === "ArrowLeft" ? -1 : 1);
+    });
+    track.addEventListener("scroll", queuePositionSync, { passive: true });
+    track.addEventListener("scrollend", syncPosition);
+    window.addEventListener("resize", syncPosition);
+    syncPosition();
+  }
+</script>

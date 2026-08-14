@@ -1,6 +1,6 @@
 ---
 import Hero from "../components/Hero.astro";
-import ProjectCard from "../components/ProjectCard.astro";
+import ProjectCarousel from "../components/ProjectCarousel.astro";
 import { siteConfig } from "../config/site";
 import { projects } from "../data/projects";
 import BaseLayout from "../layouts/BaseLayout.astro";
@@ -18,12 +18,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     aria-labelledby="all-projects-title"
   >
     <h2 id="all-projects-title">所有展示專案</h2>
-    <div class="project-grid">
-      {
-        projects.map((project) => (
-          <ProjectCard project={project} labelPrefix="展示專案" />
-        ))
-      }
-    </div>
+    <ProjectCarousel projects={projects} />
   </section>
 </BaseLayout>

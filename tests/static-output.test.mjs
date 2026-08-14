@@ -189,6 +189,53 @@ test("專案頁顯示可在新分頁開啟的展示專案", async () => {
   assert.match(html, /(?:開發中|維護中|已封存)/);
 });
 
+test("展示專案輸出焦點選取、限定狀態、外部連結與響應式圖片", async () => {
+  const homeHtml = await readRoute("/");
+  const projectsHtml = await readRoute("/projects/");
+  const featuredNames = [
+    "Namemo 名字備忘錄",
+    "PTT Watcher 2",
+    "Fuwari 部落格模板",
+  ];
+
+  assert.equal(
+    (homeHtml.match(/aria-label="焦點專案：/g) ?? []).length,
+    featuredNames.length,
+  );
+  for (const name of featuredNames) {
+    assert.match(homeHtml, new RegExp(`aria-label="焦點專案：${name}"`));
+  }
+  assert.doesNotMatch(homeHtml, /aria-label="焦點專案：PTT Watcher"/);
+
+  const cards = [
+    ...projectsHtml.matchAll(
+      /<article[^>]*aria-label="展示專案：[^"]+"[^>]*>([\s\S]*?)<\/article>/g,
+    ),
+  ];
+  assert.equal(cards.length, 4);
+  const githubUrls = new Set();
+  for (const [, card] of cards) {
+    const status = card.match(
+      /<span[^>]*class="status"[^>]*>([^<]+)<\/span>/,
+    )?.[1];
+    assert.ok(["開發中", "維護中", "已封存"].includes(status));
+    assert.match(
+      card,
+      /<img[^>]*alt="[^"]+"[^>]*width="\d+"[^>]*height="\d+"[^>]*loading="lazy"[^>]*sizes="[^"]+"[^>]*>/,
+    );
+    assert.match(
+      card,
+      /<a[^>]*href="https:\/\/github\.com\/[^"]+"[^>]*target="_blank"[^>]*rel="noreferrer"[^>]*>[\s\S]*在新分頁開啟/,
+    );
+    const githubUrl = card.match(
+      /href="(https:\/\/github\.com\/Katsudon3128\/[^/"]+)"/,
+    )?.[1];
+    assert.ok(githubUrl, "每個展示專案應連到個別儲存庫，而非個人首頁");
+    githubUrls.add(githubUrl);
+  }
+  assert.equal(githubUrls.size, cards.length, "展示專案應有各自的儲存庫 URL");
+});
+
 test("部落格頁能開啟示例文章並閱讀 Markdown 正文", async () => {
   const listHtml = await readRoute("/blog/");
   const articleHtml = await readRoute("/blog/building-products-end-to-end/");
