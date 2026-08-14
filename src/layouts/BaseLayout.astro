@@ -14,6 +14,12 @@ const title =
   metadata.title === "首頁"
     ? siteConfig.name
     : `${metadata.title}｜${siteConfig.name}`;
+const openGraphImage = metadata.image
+  ? new URL(metadata.image, siteConfig.url)
+  : undefined;
+const structuredData = metadata.structuredData
+  ? JSON.stringify(metadata.structuredData).replaceAll("<", "\\u003c")
+  : undefined;
 ---
 
 <!doctype html>
@@ -22,10 +28,45 @@ const title =
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={metadata.description} />
+    {metadata.noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href={siteConfig.assets.favicon} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={metadata.description} />
+    <meta property="og:type" content={metadata.openGraphType ?? "website"} />
+    <meta property="og:url" content={canonical} />
+    {openGraphImage && <meta property="og:image" content={openGraphImage} />}
+    {
+      openGraphImage && metadata.imageAlt && (
+        <meta property="og:image:alt" content={metadata.imageAlt} />
+      )
+    }
+    {
+      metadata.publishedAt && (
+        <meta
+          property="article:published_time"
+          content={metadata.publishedAt.toISOString()}
+        />
+      )
+    }
+    {
+      metadata.updatedAt && (
+        <meta
+          property="article:modified_time"
+          content={metadata.updatedAt.toISOString()}
+        />
+      )
+    }
+    {metadata.tags?.map((tag) => <meta property="article:tag" content={tag} />)}
+    {
+      structuredData && (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={structuredData}
+        />
+      )
+    }
     <title>{title}</title>
   </head>
   <body>

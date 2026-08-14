@@ -3,9 +3,9 @@ import ArticleList from "../../components/ArticleList.astro";
 import Hero from "../../components/Hero.astro";
 import { siteConfig } from "../../config/site";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getPublishedPosts } from "../../utils/getPublishedPosts";
+import { getBlogPosts } from "../../utils/getPublishedPosts";
 
-const posts = await getPublishedPosts();
+const posts = await getBlogPosts({ includeDrafts: import.meta.env.DEV });
 ---
 
 <BaseLayout metadata={siteConfig.pages.blog}>

@@ -250,3 +250,77 @@ test("部落格頁能開啟示例文章並閱讀 Markdown 正文", async () => {
     /<h2[^>]*id="先定義可觀察的成果"[^>]*>先定義可觀察的成果<\/h2>/,
   );
 });
+
+test("文章頁輸出獨立 metadata、結構化資料與閱讀時間", async () => {
+  const html = await readRoute("/blog/building-products-end-to-end/");
+
+  assert.match(
+    html,
+    /<title>從概念到上線：我如何拆解 Web 軟體產品｜查理林｜資深 Web 軟體工程師<\/title>/,
+  );
+  assert.match(
+    html,
+    /<meta name="description" content="以可驗證的垂直切片，把模糊概念逐步帶到能被使用的正式產品。">/,
+  );
+  assert.match(
+    html,
+    /<link rel="canonical" href="https:\/\/katsudon3128\.github\.io\/blog\/building-products-end-to-end\/">/,
+  );
+  assert.match(html, /<meta property="og:type" content="article">/);
+  assert.match(
+    html,
+    /<meta property="og:url" content="https:\/\/katsudon3128\.github\.io\/blog\/building-products-end-to-end\/">/,
+  );
+  assert.match(
+    html,
+    /<meta property="og:image" content="https:\/\/katsudon3128\.github\.io\/_astro\/product-flow\.[^"]+\.webp">/,
+  );
+  assert.match(
+    html,
+    /<meta property="article:published_time" content="[^"]+">/,
+  );
+  assert.match(html, /<meta property="article:modified_time" content="[^"]+">/);
+  assert.match(html, /<meta property="article:tag" content="產品開發">/);
+  assert.match(
+    html,
+    /<script type="application\/ld\+json">[\s\S]*"@type":"BlogPosting"/,
+  );
+  assert.match(
+    html,
+    /<span[^>]*data-reading-time[^>]*>閱讀時間 1 分鐘<\/span>/,
+  );
+});
+
+test("文章頁完整呈現技術 Markdown，並妥善載入文章圖片", async () => {
+  const html = await readRoute("/blog/building-products-end-to-end/");
+
+  assert.match(
+    html,
+    /<img[^>]*data-article-cover[^>]*width="1200"[^>]*height="600"[^>]*loading="eager"[^>]*decoding="async"[^>]*fetchpriority="high"[^>]*srcset="[^"]+ 480w,[^"]+ 800w,[^"]+ 1200w"[^>]*sizes="[^"]+"[^>]*>/,
+  );
+  assert.match(html, /<h3[^>]*id="可重複的發布步驟"[^>]*>/);
+  assert.match(
+    html,
+    /<a href="https:\/\/docs\.astro\.build\/">Astro 文件<\/a>/,
+  );
+  assert.match(
+    html,
+    /<table>[\s\S]*<th>階段<\/th>[\s\S]*<td>建置<\/td>[\s\S]*<\/table>/,
+  );
+  assert.match(html, /<pre[^>]*class="[^"]*astro-code[^"]*"[^>]*>[\s\S]*const/);
+  assert.match(
+    html,
+    /<img[^>]*src="\/_astro\/product-flow\.[^"]+\.webp"[^>]*alt="垂直切片流程示意圖"[^>]*width="1200"[^>]*height="600"[^>]*loading="lazy"[^>]*decoding="async"[^>]*srcset="[^"]+ 480w,[^"]+ 800w,[^"]+ 1200w"[^>]*sizes="[^"]+"[^>]*>/,
+  );
+});
+
+test("正式建置從文章路由與公開文章索引完整排除草稿", async () => {
+  const draftRoute = "/blog/draft-workflow-preview/";
+
+  await assert.rejects(stat(outputPath(draftRoute)), { code: "ENOENT" });
+  for (const route of ["/", "/blog/"]) {
+    const html = await readRoute(route);
+    assert.doesNotMatch(html, /draft-workflow-preview/);
+    assert.doesNotMatch(html, /發布流程草稿預覽/);
+  }
+});

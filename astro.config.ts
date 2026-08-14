@@ -5,4 +5,8 @@ export default defineConfig({
   output: "static",
   site: siteConfig.url,
   trailingSlash: "always",
+  image: {
+    // Article images are trusted, version-controlled local assets.
+    dangerouslyProcessSVG: true,
+  },
 });

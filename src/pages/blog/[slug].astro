@@ -1,11 +1,18 @@
 ---
-import { render, type CollectionEntry } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { siteConfig } from "../../config/site";
+import { calculateReadingMinutes } from "../../utils/calculateReadingTime";
+import {
+  buildResponsiveArticleImage,
+  buildResponsiveArticleImages,
+  enhanceArticleImages,
+} from "../../utils/articleImages";
 import { formatDate } from "../../utils/formatDate";
-import { getPublishedPosts } from "../../utils/getPublishedPosts";
+import { getBlogPosts } from "../../utils/getPublishedPosts";
 
 export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
+  const posts = await getBlogPosts({ includeDrafts: import.meta.env.DEV });
 
   return posts.map((post) => ({
     params: { slug: post.data.slug },
@@ -17,21 +24,61 @@ interface Props {
   post: CollectionEntry<"blog">;
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { post }: Props = Astro.props;
+const coverSizes = "(max-width: 79rem) calc(100vw - 2rem), 76rem";
+const bodyImageSizes = "(max-width: 50rem) calc(100vw - 2rem), 48rem";
+const [coverImage, bodyImages] = await Promise.all([
+  buildResponsiveArticleImage(post.data.cover, coverSizes),
+  buildResponsiveArticleImages(bodyImageSizes),
+]);
+const articleHtml = enhanceArticleImages(post.rendered?.html ?? "", bodyImages);
+const readingMinutes = calculateReadingMinutes(post.body ?? "");
+const canonical = new URL(`/blog/${post.data.slug}/`, siteConfig.url);
+const articleImage = new URL(coverImage.src, siteConfig.url);
+const metadata = {
+  title: post.data.title,
+  description: post.data.summary,
+  openGraphType: "article" as const,
+  image: coverImage.src,
+  imageAlt: post.data.coverAlt,
+  publishedAt: post.data.publishedAt,
+  updatedAt: post.data.updatedAt,
+  tags: post.data.tags,
+  noindex: post.data.draft,
+  structuredData: {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.data.title,
+    description: post.data.summary,
+    image: articleImage.href,
+    datePublished: post.data.publishedAt.toISOString(),
+    dateModified: (post.data.updatedAt ?? post.data.publishedAt).toISOString(),
+    author: { "@type": "Person", name: siteConfig.owner },
+    publisher: { "@type": "Person", name: siteConfig.owner },
+    mainEntityOfPage: canonical.href,
+    keywords: post.data.tags,
+  },
+};
 ---
 
-<BaseLayout
-  metadata={{ title: post.data.title, description: post.data.summary }}
->
-  <article class="article-page">
+<BaseLayout metadata={metadata}>
+  <article
+    class="article-page"
+    data-show-line-numbers={post.data.showLineNumbers ? "true" : "false"}
+  >
     <header class="article-header content-width">
       <a class="back-link" href="/blog/">← 返回部落格</a>
       <img
-        src={post.data.cover}
+        data-article-cover
+        src={coverImage.src}
         alt={post.data.coverAlt}
-        width="1200"
-        height="600"
+        width={coverImage.width}
+        height={coverImage.height}
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+        srcset={coverImage.srcset}
+        sizes={coverImage.sizes}
       />
       <div class="article-header__text">
         <ul class="tag-list" aria-label="文章標籤">
@@ -39,13 +86,23 @@ const { Content } = await render(post);
         </ul>
         <h1>{post.data.title}</h1>
         <p>{post.data.summary}</p>
-        <time datetime={post.data.publishedAt.toISOString()}>
-          發布於 {formatDate(post.data.publishedAt)}
-        </time>
+        <div class="article-details">
+          <time datetime={post.data.publishedAt.toISOString()}>
+            發布於 {formatDate(post.data.publishedAt)}
+          </time>
+          {
+            post.data.updatedAt && (
+              <time datetime={post.data.updatedAt.toISOString()}>
+                更新於 {formatDate(post.data.updatedAt)}
+              </time>
+            )
+          }
+          <span data-reading-time>閱讀時間 {readingMinutes} 分鐘</span>
+        </div>
       </div>
     </header>
     <div class="article-body content-width">
-      <Content />
+      <Fragment set:html={articleHtml} />
     </div>
   </article>
 </BaseLayout>
@@ -83,6 +140,15 @@ const { Content } = await render(post);
     font-size: 1.15rem;
   }
 
+  .article-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+  }
+
   .article-body {
     padding-block: clamp(3rem, 8vw, 6rem);
     font-size: 1.08rem;
@@ -95,6 +161,38 @@ const { Content } = await render(post);
 
   .article-body :global(p) {
     margin-bottom: 1.5rem;
+  }
+
+  .article-body :global(img) {
+    width: 100%;
+    border: 1px solid var(--color-border);
+  }
+
+  .article-body :global(table) {
+    display: block;
+    width: 100%;
+    margin-block: 2rem;
+    overflow-x: auto;
+    border-collapse: collapse;
+  }
+
+  .article-body :global(th),
+  .article-body :global(td) {
+    border: 1px solid var(--color-border);
+    padding: 0.65rem 0.85rem;
+    text-align: left;
+  }
+
+  .article-body :global(pre) {
+    max-width: 100%;
+    margin-block: 2rem;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    padding: 1rem;
+  }
+
+  .article-body :global(a) {
+    overflow-wrap: anywhere;
   }
 
   .back-link {

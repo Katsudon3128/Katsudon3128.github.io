@@ -85,6 +85,14 @@ export const siteConfig = {
 export type PageMetadata = {
   title: string;
   description: string;
+  openGraphType?: "website" | "article";
+  image?: string;
+  imageAlt?: string;
+  publishedAt?: Date;
+  updatedAt?: Date;
+  tags?: string[];
+  structuredData?: Record<string, unknown>;
+  noindex?: boolean;
 };
 
 export type CoverConfig =
