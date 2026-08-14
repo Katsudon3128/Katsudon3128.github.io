@@ -1,5 +1,17 @@
 import { expect, test } from "@playwright/test";
 
+test("手機專案頁不出現超出 viewport 的黑邊", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/projects/?mobile-canvas");
+
+  const pageWidth = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    canvas: document.documentElement.scrollWidth,
+  }));
+
+  expect(pageWidth.canvas).toBe(pageWidth.viewport);
+});
+
 test("訪客可從專案頁操作不循環的手動輪播", async ({ page }) => {
   await page.goto("/projects/");
 
