@@ -1,0 +1,61 @@
+---
+import type { ArticleHeading } from "../utils/articleHeadings";
+import TableOfContentsList from "./TableOfContentsList.astro";
+
+interface Props {
+  headings: ArticleHeading[];
+}
+
+const { headings }: Props = Astro.props;
+---
+
+<details class="toc-mobile">
+  <summary>文章目錄</summary>
+  <nav aria-label="文章目錄">
+    <TableOfContentsList {headings} />
+  </nav>
+</details>
+<nav class="toc-desktop" aria-label="文章目錄">
+  <p>目錄</p>
+  <TableOfContentsList {headings} />
+</nav>
+
+<style>
+  .toc-mobile {
+    margin-bottom: 2rem;
+    border: 1px solid var(--color-border);
+  }
+
+  .toc-mobile summary {
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    font-family: var(--font-mono);
+  }
+
+  .toc-mobile nav {
+    border-top: 1px solid var(--color-border);
+    padding: 1rem;
+  }
+
+  .toc-desktop {
+    display: none;
+  }
+
+  .toc-desktop p {
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+  }
+
+  @media (min-width: 65rem) {
+    .toc-mobile {
+      display: none;
+    }
+
+    .toc-desktop {
+      position: sticky;
+      top: calc(var(--header-height) + 1rem);
+      display: block;
+    }
+  }
+</style>

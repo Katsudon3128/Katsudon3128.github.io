@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import TableOfContents from "../../components/TableOfContents.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { siteConfig } from "../../config/site";
 import { calculateReadingMinutes } from "../../utils/calculateReadingTime";
@@ -8,30 +9,44 @@ import {
   buildResponsiveArticleImages,
   enhanceArticleImages,
 } from "../../utils/articleImages";
+import { getArticleHeadings } from "../../utils/articleHeadings";
 import { formatDate } from "../../utils/formatDate";
+import { enhanceCodeBlocks } from "../../utils/enhanceCodeBlocks";
 import { getBlogPosts } from "../../utils/getPublishedPosts";
 
 export async function getStaticPaths() {
-  const posts = await getBlogPosts({ includeDrafts: import.meta.env.DEV });
+  const posts = await getBlogPosts({
+    includeDrafts: import.meta.env.DEV || import.meta.env.MODE === "test",
+  });
 
-  return posts.map((post) => ({
+  return posts.map((post, index) => ({
     params: { slug: post.data.slug },
-    props: { post },
+    props: {
+      post,
+      previousPost: posts[index + 1],
+      nextPost: posts[index - 1],
+    },
   }));
 }
 
 interface Props {
   post: CollectionEntry<"blog">;
+  previousPost?: CollectionEntry<"blog">;
+  nextPost?: CollectionEntry<"blog">;
 }
 
-const { post }: Props = Astro.props;
+const { post, previousPost, nextPost }: Props = Astro.props;
+const articleHeadings = getArticleHeadings(post.rendered?.metadata?.headings);
+const showTableOfContents = articleHeadings.length >= 3;
 const coverSizes = "(max-width: 79rem) calc(100vw - 2rem), 76rem";
 const bodyImageSizes = "(max-width: 50rem) calc(100vw - 2rem), 48rem";
 const [coverImage, bodyImages] = await Promise.all([
   buildResponsiveArticleImage(post.data.cover, coverSizes),
   buildResponsiveArticleImages(bodyImageSizes),
 ]);
-const articleHtml = enhanceArticleImages(post.rendered?.html ?? "", bodyImages);
+const articleHtml = enhanceCodeBlocks(
+  enhanceArticleImages(post.rendered?.html ?? "", bodyImages),
+);
 const readingMinutes = calculateReadingMinutes(post.body ?? "");
 const canonical = new URL(`/blog/${post.data.slug}/`, siteConfig.url);
 const articleImage = new URL(coverImage.src, siteConfig.url);
@@ -101,11 +116,119 @@ const metadata = {
         </div>
       </div>
     </header>
-    <div class="article-body content-width">
-      <Fragment set:html={articleHtml} />
+    <div
+      class:list={[
+        "article-reading",
+        "content-width",
+        { "article-reading--with-toc": showTableOfContents },
+      ]}
+    >
+      {showTableOfContents && <TableOfContents headings={articleHeadings} />}
+      <div class="article-body">
+        <Fragment set:html={articleHtml} />
+      </div>
     </div>
+    <footer class="article-footer content-width">
+      <nav aria-label="文章延伸導覽">
+        {
+          previousPost && (
+            <a href={`/blog/${previousPost.data.slug}/`}>
+              上一篇：{previousPost.data.title}
+            </a>
+          )
+        }
+        <a href="/blog/">返回部落格</a>
+        {
+          nextPost && (
+            <a href={`/blog/${nextPost.data.slug}/`}>
+              下一篇：{nextPost.data.title}
+            </a>
+          )
+        }
+      </nav>
+      <div data-article-actions>
+        <button
+          type="button"
+          data-copy-article-link={canonical.href}
+          aria-describedby="article-copy-status"
+          hidden
+        >
+          複製文章連結
+        </button>
+        <span
+          id="article-copy-status"
+          class="visually-hidden"
+          role="status"
+          aria-live="polite"></span>
+      </div>
+    </footer>
   </article>
 </BaseLayout>
+
+<script>
+  interface CopyFeedback {
+    successStatus: string;
+    successButton: string;
+    failureStatus: string;
+  }
+
+  async function copyWithFeedback(
+    text: string,
+    button: HTMLButtonElement,
+    status: HTMLElement,
+    feedback: CopyFeedback,
+  ) {
+    try {
+      await navigator.clipboard.writeText(text);
+      status.textContent = feedback.successStatus;
+      button.textContent = feedback.successButton;
+    } catch {
+      status.textContent = feedback.failureStatus;
+    }
+  }
+
+  const copyButtons =
+    document.querySelectorAll<HTMLButtonElement>("[data-copy-code]");
+
+  for (const button of copyButtons) {
+    button.hidden = false;
+    button.addEventListener("click", async () => {
+      const block = button.closest<HTMLElement>("[data-code-block]");
+      const code = block?.querySelector("code")?.textContent;
+      const status = block?.querySelector<HTMLElement>("[role='status']");
+
+      if (!code || !status) return;
+
+      await copyWithFeedback(code, button, status, {
+        successStatus: "程式碼已複製",
+        successButton: "已複製",
+        failureStatus: "無法複製，請手動選取程式碼",
+      });
+    });
+  }
+
+  const articleLinkButton = document.querySelector<HTMLButtonElement>(
+    "[data-copy-article-link]",
+  );
+
+  if (articleLinkButton) {
+    articleLinkButton.hidden = false;
+    articleLinkButton.addEventListener("click", async () => {
+      const status = document.querySelector<HTMLElement>(
+        "#article-copy-status",
+      );
+      const articleUrl = articleLinkButton.dataset.copyArticleLink;
+
+      if (!status || !articleUrl) return;
+
+      await copyWithFeedback(articleUrl, articleLinkButton, status, {
+        successStatus: "文章連結已複製",
+        successButton: "已複製文章連結",
+        failureStatus: "無法複製，請手動複製瀏覽器網址",
+      });
+    });
+  }
+</script>
 
 <style>
   .article-page {
@@ -124,8 +247,7 @@ const metadata = {
     object-fit: cover;
   }
 
-  .article-header__text,
-  .article-body {
+  .article-header__text {
     width: min(100%, var(--reading-width));
     margin-inline: auto;
   }
@@ -149,14 +271,24 @@ const metadata = {
     font-size: 0.82rem;
   }
 
-  .article-body {
+  .article-reading {
     padding-block: clamp(3rem, 8vw, 6rem);
+  }
+
+  .article-body {
+    width: min(100%, var(--reading-width));
+    margin-inline: auto;
     font-size: 1.08rem;
   }
 
   .article-body :global(h2) {
     margin-block: 3rem 1rem;
     font-size: clamp(1.7rem, 4vw, 2.4rem);
+  }
+
+  .article-body :global(h2),
+  .article-body :global(h3) {
+    scroll-margin-top: calc(var(--header-height) + 1rem);
   }
 
   .article-body :global(p) {
@@ -183,12 +315,61 @@ const metadata = {
     text-align: left;
   }
 
-  .article-body :global(pre) {
+  .article-body :global(.code-block) {
     max-width: 100%;
     margin-block: 2rem;
-    overflow-x: auto;
     border: 1px solid var(--color-border);
+  }
+
+  .article-body :global(.code-block__toolbar) {
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--color-border);
+    padding-left: 1rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+
+  .article-body :global([data-copy-code]) {
+    align-self: stretch;
+    margin: 0.35rem;
+    border: 1px solid var(--color-border);
+    padding-inline: 1rem;
+    background: var(--color-surface-raised);
+    color: var(--color-text);
+    cursor: pointer;
+    font: inherit;
+  }
+
+  .article-body :global([data-copy-code]:hover) {
+    background: var(--color-accent);
+    color: var(--color-background);
+  }
+
+  .article-body :global(pre) {
+    max-width: 100%;
+    margin: 0;
+    overflow-x: auto;
     padding: 1rem;
+  }
+
+  .article-page[data-show-line-numbers="true"] .article-body :global(.line) {
+    display: block;
+  }
+
+  .article-page[data-show-line-numbers="true"]
+    .article-body
+    :global(.line::before) {
+    content: attr(data-line-number);
+    display: inline-block;
+    width: 2ch;
+    margin-right: 1rem;
+    color: var(--color-text-muted);
+    text-align: right;
+    user-select: none;
   }
 
   .article-body :global(a) {
@@ -197,5 +378,66 @@ const metadata = {
 
   .back-link {
     justify-self: start;
+  }
+
+  .article-footer {
+    display: grid;
+    gap: 1rem;
+    border-top: 1px solid var(--color-border);
+    padding-top: 2rem;
+  }
+
+  .article-footer nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .article-footer nav a,
+  .article-footer button {
+    border: 1px solid var(--color-border);
+    padding: 0.8rem 1rem;
+    background: transparent;
+    color: var(--color-accent-strong);
+    font: inherit;
+    text-align: center;
+  }
+
+  .article-footer nav a {
+    text-decoration: none;
+  }
+
+  .article-footer button {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .article-footer nav a:hover,
+  .article-footer button:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-background);
+  }
+
+  @media (max-width: 44.99rem) {
+    .article-footer nav {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 65rem) {
+    .article-reading--with-toc {
+      display: grid;
+      grid-template-columns: minmax(10rem, 14rem) minmax(
+          0,
+          var(--reading-width)
+        );
+      gap: clamp(2rem, 5vw, 5rem);
+      align-items: start;
+    }
+
+    .article-reading--with-toc .article-body {
+      margin-inline: 0;
+    }
   }
 </style>

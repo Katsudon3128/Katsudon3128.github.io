@@ -15,7 +15,8 @@ export default defineConfig({
     channel: isCI ? undefined : "chrome",
   },
   webServer: {
-    command: "node tests/serve-dist.mjs",
+    command:
+      "ASTRO_BROWSER_TEST_BUILD=1 npm run build -- --mode test && node tests/serve-dist.mjs dist-test",
     url: "http://127.0.0.1:4321/projects/",
     reuseExistingServer: false,
   },

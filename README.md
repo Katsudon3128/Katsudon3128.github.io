@@ -30,6 +30,7 @@ npm run verify
 
 - `slug` 必須手動填寫 ASCII kebab-case；文章從草稿改為發布後不得變更。
 - `draft: true` 的文章可用 `npm run dev` 預覽，但不會進入正式建置輸出。
+- `showLineNumbers: true` 可為個別文章的程式碼區塊顯示行號；預設為關閉。
 - 封面使用 `articleImages` 的圖片鍵；Markdown 正文圖片使用 `![替代文字](article:<圖片鍵>)`。
 - 新增或替換文章圖片時，只需更新 `src/config/articleImages.ts` 的來源與響應式寬度。
 

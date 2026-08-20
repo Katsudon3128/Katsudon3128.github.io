@@ -8,7 +8,12 @@ tags:
 cover: product-flow
 coverAlt: 產品流程從概念逐步連接至正式上線的示意圖
 draft: true
-showLineNumbers: false
+showLineNumbers: true
 ---
 
 這篇草稿讓網站主人在發布前確認文章版面與內容。
+
+```sh
+npm run build
+npm test
+```

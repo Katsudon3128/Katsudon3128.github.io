@@ -1,0 +1,41 @@
+---
+import type { ArticleHeading } from "../utils/articleHeadings";
+
+interface Props {
+  headings: ArticleHeading[];
+}
+
+const { headings }: Props = Astro.props;
+---
+
+<ol>
+  {
+    headings.map((heading) => (
+      <li class:list={{ "toc-subheading": heading.depth === 3 }}>
+        <a href={`#${heading.slug}`}>{heading.text}</a>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li + li {
+    margin-top: 0.6rem;
+  }
+
+  .toc-subheading {
+    padding-left: 1rem;
+  }
+
+  a {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+</style>

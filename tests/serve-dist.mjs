@@ -2,7 +2,8 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-const dist = path.resolve(import.meta.dirname, "../dist");
+const outputDirectory = process.argv[2] ?? "dist";
+const dist = path.resolve(import.meta.dirname, "..", outputDirectory);
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
