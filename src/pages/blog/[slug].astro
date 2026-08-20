@@ -387,7 +387,8 @@ const metadata = {
     padding-top: 2rem;
   }
 
-  .article-footer nav {
+  .article-footer nav,
+  .article-footer [data-article-actions] {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.75rem;
@@ -420,7 +421,8 @@ const metadata = {
   }
 
   @media (max-width: 44.99rem) {
-    .article-footer nav {
+    .article-footer nav,
+    .article-footer [data-article-actions] {
       grid-template-columns: 1fr;
     }
   }

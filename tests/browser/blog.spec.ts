@@ -136,6 +136,29 @@ test("文章底部依日期導覽相鄰文章並複製乾淨網址", async ({ co
   ).toHaveAttribute("href", "/blog/draft-workflow-preview/");
 });
 
+test("複製文章連結與返回部落格控制項保持相同寬度", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/blog/building-products-end-to-end/");
+
+  const actions = page.locator("[data-article-actions]");
+  const button = actions.getByRole("button", { name: "複製文章連結" });
+  const backLink = page
+    .getByRole("navigation", { name: "文章延伸導覽" })
+    .getByRole("link", { name: "返回部落格" });
+  const desktopButtonBox = await button.boundingBox();
+  const desktopBackLinkBox = await backLink.boundingBox();
+  expect(desktopButtonBox).not.toBeNull();
+  expect(desktopBackLinkBox).not.toBeNull();
+  expect(desktopButtonBox!.width).toBeCloseTo(desktopBackLinkBox!.width, 0);
+
+  await page.setViewportSize({ width: 320, height: 720 });
+  const mobileButtonBox = await button.boundingBox();
+  const mobileBackLinkBox = await backLink.boundingBox();
+  expect(mobileButtonBox).not.toBeNull();
+  expect(mobileBackLinkBox).not.toBeNull();
+  expect(mobileButtonBox!.width).toBeCloseTo(mobileBackLinkBox!.width, 0);
+});
+
 test("JavaScript 失效與 reduced motion 不阻斷長文閱讀", async ({
   browser,
   page,
