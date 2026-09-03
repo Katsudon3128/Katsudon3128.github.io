@@ -13,7 +13,7 @@
     "check": "ASTRO_TELEMETRY_DISABLED=1 npx --no-install astro check",
     "format": "npx --no-install prettier --write 'src/**/*.{astro,css,md,ts}' 'tests/**/*.{mjs,ts}' '.github/**/*.yml' README.md package.json astro.config.ts playwright.config.ts tsconfig.json .prettierrc.mjs",
     "format:check": "npx --no-install prettier --check 'src/**/*.{astro,css,md,ts}' 'tests/**/*.{mjs,ts}' '.github/**/*.yml' README.md package.json astro.config.ts playwright.config.ts tsconfig.json .prettierrc.mjs",
-    "test:output": "node --test tests/static-output.test.mjs",
+    "test:output": "ASTRO_STATIC_OUTPUT_FIXTURES=1 npm run build && ASTRO_STATIC_OUTPUT_FIXTURES=1 node --test tests/static-output.test.mjs",
     "test:browser": "npx --no-install playwright test",
     "test": "npm run build && npm run test:output && npm run test:browser",
     "verify": "npm run format:check && npm run check && npm test"

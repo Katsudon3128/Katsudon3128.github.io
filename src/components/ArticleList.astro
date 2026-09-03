@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import { buildResponsiveArticleImage } from "../utils/articleImages";
 import { formatDate } from "../utils/formatDate";
+import ArticleTags from "./ArticleTags.astro";
 
 interface Props {
   posts: CollectionEntry<"blog">[];
@@ -27,9 +28,7 @@ const rows = await Promise.all(
     rows.map(({ post, coverImage }) => (
       <article
         class:list={["article-row", { "article-row--with-cover": showCovers }]}
-        aria-label={
-          labelPrefix ? `${labelPrefix}：${post.data.title}` : undefined
-        }
+        aria-label={`${labelPrefix ?? "文章摘要"}：${post.data.title}`}
       >
         {coverImage && (
           <img
@@ -52,11 +51,7 @@ const rows = await Promise.all(
             {post.data.draft && <span class="draft-label">草稿</span>}
           </h3>
           <p>{post.data.summary}</p>
-          <ul class="tag-list" aria-label="文章標籤">
-            {post.data.tags.map((tag) => (
-              <li>{tag}</li>
-            ))}
-          </ul>
+          <ArticleTags tags={post.data.tags} />
         </div>
       </article>
     ))

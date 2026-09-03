@@ -6,10 +6,16 @@ const runtime = globalThis as typeof globalThis & {
 };
 const isBrowserTestBuild =
   runtime.process?.env?.ASTRO_BROWSER_TEST_BUILD === "1";
+const isStaticOutputFixtureBuild =
+  runtime.process?.env?.ASTRO_STATIC_OUTPUT_FIXTURES === "1";
 
 export default defineConfig({
   output: "static",
-  outDir: isBrowserTestBuild ? "./dist-test" : "./dist",
+  outDir: isBrowserTestBuild
+    ? "./dist-test"
+    : isStaticOutputFixtureBuild
+      ? "./dist-fixture"
+      : "./dist",
   site: siteConfig.url,
   trailingSlash: "always",
   image: {

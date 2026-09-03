@@ -1,0 +1,76 @@
+---
+import { getPaginationPath } from "../utils/blogListings";
+
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath: string;
+}
+
+const { currentPage, totalPages, basePath } = Astro.props;
+const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+---
+
+{
+  totalPages > 1 && (
+    <nav class="pagination" aria-label="文章分頁">
+      {currentPage > 1 && (
+        <a href={getPaginationPath(basePath, currentPage - 1)}>上一頁</a>
+      )}
+      <ol>
+        {pages.map((page) => (
+          <li>
+            {page === currentPage ? (
+              <span aria-current="page">第 {page} 頁</span>
+            ) : (
+              <a href={getPaginationPath(basePath, page)}>第 {page} 頁</a>
+            )}
+          </li>
+        ))}
+      </ol>
+      {currentPage < totalPages && (
+        <a href={getPaginationPath(basePath, currentPage + 1)}>下一頁</a>
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a,
+  span {
+    display: block;
+    border: 1px solid var(--color-border);
+    padding: 0.55rem 0.8rem;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover,
+  span {
+    border-color: var(--color-accent);
+  }
+
+  span {
+    color: var(--color-text);
+  }
+</style>

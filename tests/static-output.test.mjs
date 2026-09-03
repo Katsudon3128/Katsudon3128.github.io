@@ -4,7 +4,10 @@ import path from "node:path";
 import test from "node:test";
 
 const root = path.resolve(import.meta.dirname, "..");
-const dist = path.join(root, "dist");
+const dist = path.join(
+  root,
+  process.env.ASTRO_STATIC_OUTPUT_FIXTURES === "1" ? "dist-fixture" : "dist",
+);
 
 const requiredRoutes = [
   "/",
@@ -237,7 +240,11 @@ test("展示專案輸出焦點選取、限定狀態、外部連結與響應式�
 });
 
 test("部落格頁能開啟示例文章並閱讀 Markdown 正文", async () => {
-  const listHtml = await readRoute("/blog/");
+  const firstPageHtml = await readRoute("/blog/");
+  const listHtml =
+    process.env.ASTRO_STATIC_OUTPUT_FIXTURES === "1"
+      ? `${firstPageHtml}${await readRoute("/blog/page/2/")}`
+      : firstPageHtml;
   const articleHtml = await readRoute("/blog/building-products-end-to-end/");
 
   assert.match(listHtml, /href="\/blog\/building-products-end-to-end\/"/);
@@ -338,4 +345,142 @@ test("正式建置從文章路由與公開文章索引完整排除草稿", async
     assert.doesNotMatch(html, /draft-workflow-preview/);
     assert.doesNotMatch(html, /發布流程草稿預覽/);
   }
+});
+
+test("部落格依發布日期分成每頁最多十篇的靜態頁面", async () => {
+  const firstPage = await readRoute("/blog/");
+  const secondPage = await readRoute("/blog/page/2/");
+
+  assert.equal(
+    (firstPage.match(/<article[^>]*aria-label="文章摘要：/g) ?? []).length,
+    10,
+  );
+  assert.equal(
+    (secondPage.match(/<article[^>]*aria-label="文章摘要：/g) ?? []).length,
+    1,
+  );
+  assert.ok(
+    firstPage.indexOf("分頁測試文章 10") < firstPage.indexOf("分頁測試文章 09"),
+  );
+  assert.match(secondPage, /從概念到上線：我如何拆解 Web 軟體產品/);
+  assert.match(firstPage, /class="[^"]*full-bleed-hero/);
+  assert.doesNotMatch(secondPage, /class="[^"]*full-bleed-hero/);
+  assert.match(secondPage, /<nav[^>]*aria-label="文章分頁"/);
+});
+
+test("標籤連結產生可分享且同樣遵守十篇邊界的靜態列表", async () => {
+  const blog = await readRoute("/blog/");
+  const firstTagPage = await readRoute("/blog/tags/product-development/");
+  const secondTagPage = await readRoute(
+    "/blog/tags/product-development/page/2/",
+  );
+  const singlePageTag = await readRoute("/blog/tags/software-design/");
+
+  assert.match(blog, /href="\/blog\/tags\/product-development\/"/);
+  assert.equal(
+    (firstTagPage.match(/<article[^>]*aria-label="文章摘要：/g) ?? []).length,
+    10,
+  );
+  assert.equal(
+    (secondTagPage.match(/<article[^>]*aria-label="文章摘要：/g) ?? []).length,
+    1,
+  );
+  assert.doesNotMatch(firstTagPage, /class="[^"]*full-bleed-hero/);
+  assert.doesNotMatch(singlePageTag, /aria-label="文章分頁"/);
+
+  const productDevelopmentPages = `${firstTagPage}${secondTagPage}`;
+  for (let fixture = 1; fixture <= 10; fixture += 1) {
+    assert.match(
+      productDevelopmentPages,
+      new RegExp(`/blog/fixture-article-${String(fixture).padStart(2, "0")}/`),
+    );
+  }
+  assert.match(
+    productDevelopmentPages,
+    /\/blog\/building-products-end-to-end\//,
+  );
+  assert.match(singlePageTag, /\/blog\/building-products-end-to-end\//);
+  assert.doesNotMatch(singlePageTag, /\/blog\/fixture-article-/);
+  await assert.rejects(stat(outputPath("/blog/tags/publishing-workflow/")), {
+    code: "ENOENT",
+  });
+});
+
+test("首頁自動顯示三篇最新文章的純文字摘要", async () => {
+  const html = await readRoute("/");
+  const recentPosts =
+    html.match(
+      /<section[^>]*aria-labelledby="recent-posts-title"[^>]*>([\s\S]*?)<\/section>/,
+    )?.[1] ?? "";
+
+  assert.equal(
+    (recentPosts.match(/<article[^>]*aria-label="最近文章：/g) ?? []).length,
+    3,
+  );
+  assert.ok(
+    recentPosts.indexOf("分頁測試文章 10") <
+      recentPosts.indexOf("分頁測試文章 09"),
+  );
+  assert.ok(
+    recentPosts.indexOf("分頁測試文章 09") <
+      recentPosts.indexOf("分頁測試文章 08"),
+  );
+  assert.doesNotMatch(recentPosts, /<img\b/);
+});
+
+test("部落格列表、標籤頁與分頁輸出獨立 metadata", async () => {
+  const cases = [
+    ["/blog/", "部落格｜查理林｜資深 Web 軟體工程師"],
+    ["/blog/page/2/", "部落格第 2 頁｜查理林｜資深 Web 軟體工程師"],
+    [
+      "/blog/tags/product-development/",
+      "產品開發文章｜查理林｜資深 Web 軟體工程師",
+    ],
+    [
+      "/blog/tags/product-development/page/2/",
+      "產品開發文章第 2 頁｜查理林｜資深 Web 軟體工程師",
+    ],
+  ];
+
+  for (const [route, title] of cases) {
+    const html = await readRoute(route);
+    assert.match(html, new RegExp(`<title>${title}</title>`));
+    assert.match(html, /<meta name="description" content="[^"]+">/);
+    assert.ok(
+      html.includes(
+        `<link rel="canonical" href="https://katsudon3128.github.io${route}">`,
+      ),
+    );
+  }
+});
+
+test("RSS 使用正式網址且只列出正式文章", async () => {
+  const rss = await readFile(path.join(dist, "rss.xml"), "utf8");
+
+  assert.match(rss, /<link>https:\/\/katsudon3128\.github\.io\/<\/link>/);
+  assert.match(
+    rss,
+    /<link>https:\/\/katsudon3128\.github\.io\/blog\/fixture-article-10\/<\/link>/,
+  );
+  assert.doesNotMatch(rss, /draft-workflow-preview/);
+  assert.doesNotMatch(rss, /發布流程草稿預覽/);
+});
+
+test("sitemap 涵蓋正式列表、文章與標籤頁並排除草稿", async () => {
+  const sitemap = await readFile(path.join(dist, "sitemap.xml"), "utf8");
+
+  for (const route of [
+    "/blog/",
+    "/blog/page/2/",
+    "/blog/fixture-article-10/",
+    "/blog/tags/product-development/",
+    "/blog/tags/product-development/page/2/",
+  ]) {
+    assert.ok(
+      sitemap.includes(`<loc>https://katsudon3128.github.io${route}</loc>`),
+      `sitemap 應包含 ${route}`,
+    );
+  }
+  assert.doesNotMatch(sitemap, /draft-workflow-preview/);
+  assert.doesNotMatch(sitemap, /404/);
 });

@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import ArticleTags from "../../components/ArticleTags.astro";
 import TableOfContents from "../../components/TableOfContents.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { siteConfig } from "../../config/site";
@@ -96,9 +97,7 @@ const metadata = {
         sizes={coverImage.sizes}
       />
       <div class="article-header__text">
-        <ul class="tag-list" aria-label="文章標籤">
-          {post.data.tags.map((tag) => <li>{tag}</li>)}
-        </ul>
+        <ArticleTags tags={post.data.tags} />
         <h1>{post.data.title}</h1>
         <p>{post.data.summary}</p>
         <div class="article-details">
