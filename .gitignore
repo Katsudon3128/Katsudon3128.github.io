@@ -1,9 +1,0 @@
-node_modules/
-dist/
-dist-test/
-dist-fixture/
-.astro/
-.DS_Store
-*.log
-playwright-report/
-test-results/

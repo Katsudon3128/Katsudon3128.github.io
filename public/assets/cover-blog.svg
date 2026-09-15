@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="文章段落與程式碼片段">
-  <rect width="1600" height="1000" fill="#171512"/>
-  <g fill="none" stroke="#766a57" stroke-width="4">
-    <path d="M150 190h720M150 300h500M150 390h760M150 480h620M150 570h700M150 660h470"/>
-    <rect x="1000" y="170" width="450" height="620"/><path d="M1060 270h230M1060 360h310M1060 450h190M1060 540h270M1060 630h220"/>
-  </g>
-  <rect x="150" y="760" width="390" height="22" fill="#c8944d"/>
-</svg>
